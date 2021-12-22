@@ -1,8 +1,15 @@
-    //  Modèle de données utilisateur
+    
+                //  Modèle de données utilisateur
 
-//  Import des packages dans le script
-const mongoose = require('mongoose');   //  plugin pour lier la base de données à l'application
-const uniqueValidator = require('mongoose-unique-validator');   //  plugin pour ne pas créer de doublons dans la base 
+
+
+//      Import des modules dans le script
+
+//  plugin pour lier la base de données à l'application
+const mongoose = require('mongoose');
+
+//  plugin pour ne pas créer de doublons dans la base
+const uniqueValidator = require('mongoose-unique-validator'); 
 
 //  Création du modèle de données des users
 const userSchema = mongoose.Schema({
