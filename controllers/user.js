@@ -2,10 +2,13 @@
 
 //                      Logique métier des routes user
 
-//      Import des packages dans le script
+//      Import des modules dans le script
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+
 const User = require('../models/user');
+
+require('dotenv').config();
 
 
 
@@ -15,7 +18,8 @@ const User = require('../models/user');
 //  Inscription de l'utilisateur
 exports.signup = (req, res, next) => {
     
-    bcrypt.hash(req.body.password, 10)  //  hashage du mot de passe
+    //  hashage du mot de passe
+    bcrypt.hash(req.body.password, 10)
         
         .then( hash => {
             
@@ -26,7 +30,7 @@ exports.signup = (req, res, next) => {
                 
             });
             
-            console.log(user);
+            //  Sauvegarde dans la base
             user.save()
                 .then( () => res.status(201).json({ message: 'Utilisateur créé !' }) )
                 .catch( error => res.status(400).json({ error }) );
@@ -40,10 +44,9 @@ exports.signup = (req, res, next) => {
 //  Connexion de l'utilisateur
 exports.login = (req, res, next) => {
 
+    //  Recherche dans la base
     User.findOne({ email: req.body.email })
         .then( user => {
-
-            console.log(req.body.password);
 
             if (!user) {
 
@@ -51,8 +54,9 @@ exports.login = (req, res, next) => {
 
             }
 
+            //  Comparaison ds mots de passe
             bcrypt.compare(req.body.password, user.password)
-                .then(valid => {
+                .then( valid => {
 
                     if (!valid) {
 
@@ -62,12 +66,14 @@ exports.login = (req, res, next) => {
 
                     res.status(200).json({
                         statut: "utilsateur connecté",
-                        userId: user._id,   //  Donnée à encoder
-                        token: jwt.sign( { userId: user._id }, 'RANDOM_TOKEN_SECRET', { expiresIn: '24h' } )
+                        //  Donnée à encoder:
+                        userId: user._id,
+                        //  Attribution d'un token
+                        token: jwt.sign( { userId: user._id }, process.env.SECRETKEY, { expiresIn: '24h' } )
 
                     })
 
-                })
+                } )
                 .catch(error => res.status(500).json({ error }));
 
         } )
